@@ -1,5 +1,5 @@
 import { AbstractControl, FormGroup, FormArray, Validators } from '@angular/forms';
-import { ValidationMessages as Messages} from './validation-messages';
+import { ValidationMessages} from './validation-messages';
 
 /*
  The ValidationMethods class contains all of the validation methods defined for use by vadacl.  Validation methods
@@ -7,11 +7,13 @@ import { ValidationMessages as Messages} from './validation-messages';
  */
 export class ValidationMethods {
 
+    static messages = ValidationMessages;
+
     static getLocaleMessage(validationErrorName: string, className ?: string, propertyName ?: string ): string {
-        if( className && propertyName && Messages[ className ] && Messages[ className ][ propertyName ] ) {
-            return Messages[ className ][ propertyName ][ validationErrorName ] || Messages[ validationErrorName ];
+        if( className && propertyName && this.messages[ className ] && this.messages[ className ][ propertyName ] ) {
+            return this.messages[ className ][ propertyName ][ validationErrorName ] || this.messages[ validationErrorName ];
         } else {
-            return Messages[ validationErrorName ];
+            return this.messages[ validationErrorName ];
         }
     }
 

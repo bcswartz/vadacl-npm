@@ -1,5 +1,3 @@
-
-
 import { AbstractControl, ValidatorFn } from '@angular/forms';
 import { ValidationMethods } from './validation-methods';
 import { PropertyValidations } from './interfaces';
@@ -8,6 +6,9 @@ import { PropertyValidations } from './interfaces';
  The Vadacl class can be used as the superclass for a component that implements validation, or as an injected service.
  */
 export class Vadacl {
+
+    static validationMethods = ValidationMethods;
+
     applyRules( domainClass: any, propertyName: string, validationOverrides ?: any  ) : any[] {
         let validators: any[] = [];
 
@@ -23,14 +24,14 @@ export class Vadacl {
             mergedValidations[ mv ].propertyName = propertyName ? propertyName : undefined;;
 
             //Check that validation method exists
-            if( ValidationMethods[ mv ] ) {
+            if( Vadacl.validationMethods[ mv ] ) {
                 //Parse the argument values to apply to the validation method.
-                let validatorArguments = this.getValidatorArguments( this.getMethodDeclaredArguments( ValidationMethods[ mv ] ), mergedValidations[ mv ] );
+                let validatorArguments = this.getValidatorArguments( this.getMethodDeclaredArguments( Vadacl.validationMethods[ mv ] ), mergedValidations[ mv ] );
                 /*
                  Execute the validation method, which will return a validator that the Angular reactive form classes will
                  trigger on a value change, and add that validator to the validators array.
                  */
-                validators.push( ValidationMethods[ mv ].apply( null, validatorArguments ) );
+                validators.push( Vadacl.validationMethods[ mv ].apply( null, validatorArguments ) );
             } else {
                 throw `*** Error thrown by Vadacl.applyRules: Validation method "${mv}" is undefined in ValidationMethods. ***`
             }
@@ -56,14 +57,14 @@ export class Vadacl {
             mergedValidation[ mv ].propertyName = propertyName ? propertyName : undefined;
 
             //Check that validation method exists
-            if( ValidationMethods[ mv ] ) {
+            if( Vadacl.validationMethods[ mv ] ) {
                 //Parse the argument values to apply to the validation method.
-                let validatorArguments = this.getValidatorArguments( this.getMethodDeclaredArguments( ValidationMethods[ mv ] ), mergedValidation[ mv ] );
+                let validatorArguments = this.getValidatorArguments( this.getMethodDeclaredArguments( Vadacl.validationMethods[ mv ] ), mergedValidation[ mv ] );
                 /*
                  Execute the validation method, which will return a validator that the Angular reactive form classes will
                  trigger on a value change.
                  */
-                collectionValidator = ValidationMethods[ mv ].apply( null, validatorArguments );
+                collectionValidator = Vadacl.validationMethods[ mv ].apply( null, validatorArguments );
             } else {
                 throw `*** Error thrown by Vadacl.applyCollectionRule: Validation method "${mv}" is undefined in ValidationMethods. ***`
             }

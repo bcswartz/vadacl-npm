@@ -1,13 +1,13 @@
 {
-  "name": "vadacl-npm",
-  "version": "1.0.0",
+  "name": "vadacl",
+  "version": "1.0.3",
   "description": "NPM module for the library for configuring validations and validation messages for domain classes",
   "author": "Brian Swartzfager",
   "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "prepublish": "npm run build",
+    "prepublish": "npm run build; mkdir ./dist/templates; cp ./src/validation-messages.ts ./dist/templates/validation-messages.ts; cp ./templates/vadacl.ts.txt ./dist/templates/vadacl.ts",
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
