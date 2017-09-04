@@ -3,3 +3,6 @@
 *.iml
 src
 tsconfig.json
+dist/*.spec.*
+gulpFile.js
+karma.conf.js

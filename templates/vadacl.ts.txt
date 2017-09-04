@@ -1,7 +1,13 @@
-import { ValidationMethods, Vadacl } from 'vadacl'
+import { ValidationMethods, Vadacl, Validateable, PropertyValidations as BasePropertyValidations  } from 'vadacl'
 import { ValidationMessages } from './validation-messages'
+
+// Define new custom validation methods
+class CustomValidationMethods extends ValidationMethods
+
+// Increment / extend Vadacl interfaces to support custom validation methods
+interface PropertyValidations extends BasePropertyValidations
 
 ValidationMethods.messages = ValidationMessages;
 Vadacl.validationMethods = ValidationMethods;
 
-export { Vadacl };
+export { Vadacl, Validateable, PropertyValidations };
