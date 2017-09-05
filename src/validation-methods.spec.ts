@@ -10,6 +10,9 @@ describe( 'ValidationMethods', () => {
     Messages.requiredtrue = 'default requiredTrue message';
     Messages.minlength = 'default minLength message';
     Messages.maxlength = 'default maxLength message';
+    Messages.min = 'default min message';
+    Messages.max = 'default max message';
+    Messages.email = 'default email message';
     Messages.pattern = 'default pattern message';
     Messages.withinlength = 'default withinLength message';
     Messages.totals = 'default totals message';
@@ -23,6 +26,9 @@ describe( 'ValidationMethods', () => {
             requiredtrue: 'widget requiredtrue message',
             minlength: 'widget minlength message',
             maxlength: 'widget maxlength message',
+            min: 'widget min message',
+            max: 'widget max message',
+            email: 'widget email message',
             pattern: 'widget pattern message',
             withinlength: 'widget withinlength message',
             totals: 'widget totals message',
@@ -483,6 +489,283 @@ describe( 'ValidationMethods', () => {
                     let result = func( formControl );
                     expect( result[ 'maxlength' ].message ).toEqual( 'custom maxLength message' );
                 });
+            });
+        });
+    });
+
+    describe( 'min:', () => {
+
+        it( 'returns a validation function', () => {
+            expect( ValidationMethods.min( 0 ) ).toEqual( jasmine.any( Function ) );
+        });
+
+        describe( 'validation method', () => {
+            let fn: any;
+
+            beforeEach( () => {
+                fn = ValidationMethods.min( 5 );
+                spyOn( Validators, 'min' ).and.callThrough();
+            });
+
+            it( 'calls the official Angular 4 Validator.min', () => {
+                fn( formControl );
+                expect( Validators.min ).toHaveBeenCalled();
+            });
+
+            describe( 'returns null', () => {
+                it( 'when FormControl value is null', () => {
+                    let result = fn( formControl );
+                    expect( result ).toBeNull();
+                });
+
+                it( 'when FormControl value is undefined', () => {
+                    let undefinedValue: any;
+                    formControl.setValue( undefinedValue );
+                    let result = fn( formControl );
+                    expect( result ).toBeNull();
+                });
+
+                it( 'when FormControl value is empty string', () => {
+                    formControl.setValue( '' );
+                    let result = fn( formControl );
+                    expect( result ).toBeNull();
+                });
+
+                it( 'when FormControl value >=  min argument', () => {
+                    formControl.setValue( 6 );
+                    expect( fn( formControl ) ).toBeNull();
+
+                    formControl.setValue( 5 );
+                    expect( fn( formControl ) ).toBeNull();
+                });
+
+            });
+
+            describe( 'returns error metadata object', () => {
+
+                beforeEach( () => {
+                    formControl.setValue( 4 );
+                });
+
+                it( 'when FormControl value < min argument', () => {
+                    let result = fn( formControl );
+                    expect( result ).not.toBeNull();
+                    expect( result.min ).toBeDefined();
+                });
+
+                it( 'with expected metadata properties', () => {
+                    let result = fn( formControl );
+                    expect( result.min.min ).toEqual( 5 );
+                    expect( result.min.actual ).toEqual( 4 );
+                });
+
+                it( 'that uses default min message when no message argument is provided', () => {
+                    let result = fn( formControl );
+                    expect( result.min.message ).toBeDefined();
+                    expect( result.min.message ).toEqual( Messages.min );
+                });
+
+                it( 'that uses message from argument in error metadata', () => {
+                    let func = ValidationMethods.min( 5, 'custom min message' );
+                    let result = func( formControl );
+                    expect( result[ 'min' ].message ).toEqual( 'custom min message' );
+                });
+
+                it( 'that uses locale class property message when match found', () => {
+                    let func = ValidationMethods.min( 5, null, 'Widget', 'name' );
+                    let result = func( formControl );
+                    expect( result[ 'min' ].message ).toEqual( 'widget min message' );
+                });
+
+                it( 'that overrides locale class property message when custom message is provided', () => {
+                    let func = ValidationMethods.min( 5, 'custom min message', 'Widget', 'name' );
+                    let result = func( formControl );
+                    expect( result[ 'min' ].message ).toEqual( 'custom min message' );
+                });
+            });
+        });
+    });
+
+    describe( 'max:', () => {
+
+        it( 'returns a validation function', () => {
+            expect( ValidationMethods.max( 0 ) ).toEqual( jasmine.any( Function ) );
+        });
+
+        describe( 'validation method', () => {
+            let fn: any;
+
+            beforeEach( () => {
+                fn = ValidationMethods.max( 5 );
+                spyOn( Validators, 'max' ).and.callThrough();
+            });
+
+            it( 'calls the official Angular 4 Validator.max', () => {
+                fn( formControl );
+                expect( Validators.max ).toHaveBeenCalled();
+            });
+
+            describe( 'returns null', () => {
+                it( 'when FormControl value is null', () => {
+                    let result = fn( formControl );
+                    expect( result ).toBeNull();
+                });
+
+                it( 'when FormControl value is undefined', () => {
+                    let undefinedValue: any;
+                    formControl.setValue( undefinedValue );
+                    let result = fn( formControl );
+                    expect( result ).toBeNull();
+                });
+
+                it( 'when FormControl value is empty string', () => {
+                    formControl.setValue( '' );
+                    let result = fn( formControl );
+                    expect( result ).toBeNull();
+                });
+
+                it( 'when FormControl value <=  max argument', () => {
+                    formControl.setValue( 4 );
+                    expect( fn( formControl ) ).toBeNull();
+
+                    formControl.setValue( 5 );
+                    expect( fn( formControl ) ).toBeNull();
+                });
+
+            });
+
+            describe( 'returns error metadata object', () => {
+
+                beforeEach( () => {
+                    formControl.setValue( 6 );
+                });
+
+                it( 'when FormControl value > min argument', () => {
+                    let result = fn( formControl );
+                    expect( result ).not.toBeNull();
+                    expect( result.max ).toBeDefined();
+                });
+
+                it( 'with expected metadata properties', () => {
+                    let result = fn( formControl );
+                    expect( result.max.max ).toEqual( 5 );
+                    expect( result.max.actual ).toEqual( 6 );
+                });
+
+                it( 'that uses default min message when no message argument is provided', () => {
+                    let result = fn( formControl );
+                    expect( result.max.message ).toBeDefined();
+                    expect( result.max.message ).toEqual( Messages.max );
+                });
+
+                it( 'that uses message from argument in error metadata', () => {
+                    let func = ValidationMethods.max( 5, 'custom max message' );
+                    let result = func( formControl );
+                    expect( result[ 'max' ].message ).toEqual( 'custom max message' );
+                });
+
+                it( 'that uses locale class property message when match found', () => {
+                    let func = ValidationMethods.max( 5, null, 'Widget', 'name' );
+                    let result = func( formControl );
+                    expect( result[ 'max' ].message ).toEqual( 'widget max message' );
+                });
+
+                it( 'that overrides locale class property message when custom message is provided', () => {
+                    let func = ValidationMethods.max( 5, 'custom max message', 'Widget', 'name' );
+                    let result = func( formControl );
+                    expect( result[ 'max' ].message ).toEqual( 'custom max message' );
+                });
+            });
+        });
+    });
+
+    describe( 'email:', () => {
+
+        it( 'returns a validation function', () => {
+            expect( ValidationMethods.email ).toEqual( jasmine.any( Function ) );
+        });
+
+        describe( 'validation method', () => {
+            let fn: any;
+
+            beforeEach( () => {
+                fn = ValidationMethods.email();
+                spyOn( Validators, 'email' ).and.callThrough();
+            });
+
+            it( 'calls the official Angular 4 Validator.email (if value exists to evaluate)', () => {
+                formControl.setValue( 'foo' );
+                fn( formControl );
+                expect( Validators.email ).toHaveBeenCalled();
+            });
+
+            describe( 'returns null', () => {
+                it( 'when FormControl value is null', () => {
+                    let result = fn( formControl );
+                    expect( result ).toBeNull();
+                });
+
+                it( 'when FormControl value is undefined', () => {
+                    let undefinedValue: any;
+                    formControl.setValue( undefinedValue );
+                    let result = fn( formControl );
+                    expect( result ).toBeNull();
+                });
+
+                it( 'when FormControl value is empty string', () => {
+                    formControl.setValue( '' );
+                    let result = fn( formControl );
+                    expect( result ).toBeNull();
+                });
+
+                it( 'when FormControl has a string that matches the email pattern defined by Angular', () => {
+                    formControl.setValue( 'bob@gmail.com' );
+                    expect( fn( formControl ) ).toBeNull();
+                });
+
+            });
+
+            describe( 'returns error metadata object', () => {
+
+                beforeEach( () => {
+                    formControl.setValue( 'abc' );
+                });
+
+                it( 'when FormControl has a string that does not match the email pattern defined by Angular', () => {
+                    let result = fn( formControl );
+                    expect( result ).not.toBeNull();
+                    expect( result.email ).toBeDefined();
+                });
+
+                it( 'with expected metadata properties', () => {
+                    let result = fn( formControl );
+                    expect( result.email.isNotEmail ).toEqual( true );
+                });
+
+                it( 'that uses default email message when no email argument is provided', () => {
+                    let result = fn( formControl );
+                    expect( result.email.message ).toBeDefined();
+                    expect( result.email.message ).toEqual( Messages.email );
+                });
+
+                it( 'that uses message from argument in error metadata', () => {
+                    let func = ValidationMethods.email( 'custom email message' );
+                    let result = func( formControl );
+                    expect( result[ 'email' ].message ).toEqual( 'custom email message' );
+                });
+
+                it( 'that uses locale class property message when match found', () => {
+                    let func = ValidationMethods.email( null, 'Widget', 'name' );
+                    let result = func( formControl );
+                    expect( result[ 'email' ].message ).toEqual( 'widget email message' );
+                });
+
+                it( 'that overrides locale class property message when custom message is provided', () => {
+                    let func = ValidationMethods.email( 'custom email message', 'Widget', 'name' );
+                    let result = func( formControl );
+                    expect( result[ 'email' ].message ).toEqual( 'custom email message' );
+                });
+
             });
         });
     });

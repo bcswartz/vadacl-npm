@@ -19,6 +19,20 @@ interface MaxLengthSettings {
     message ?: string
 }
 
+interface MinSettings {
+    min : number,
+    message ?: string
+}
+
+interface MaxSettings {
+    max : number,
+    message ?: string
+}
+
+interface EmailSettings {
+    message ?: string
+}
+
 interface PatternSettings {
     pattern : string,
     message ?: string
@@ -53,6 +67,9 @@ interface PropertyValidations {
     requiredTrue ?: RequiredTrueSettings,
     minLength ?: MinLengthSettings,
     maxLength ?: MaxLengthSettings,
+    min ?: MinSettings,
+    max ?: MaxSettings,
+    email ?: EmailSettings,
     pattern ?: PatternSettings,
     withinLength ?: WithinLengthSettings,
     totals ?: TotalsSettings,
@@ -72,6 +89,9 @@ export {
     RequiredTrueSettings,
     MinLengthSettings,
     MaxLengthSettings,
+    MinSettings,
+    MaxSettings,
+    EmailSettings,
     PatternSettings,
     WithinLengthSettings,
     TotalsSettings,

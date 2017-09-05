@@ -1,6 +1,6 @@
 {
   "name": "vadacl",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "NPM module for the library for configuring validations and validation messages for domain classes",
   "author": "Brian Swartzfager",
   "license": "MIT",
@@ -45,12 +45,12 @@
     "typescript": "~2.2.0",
     "watchify": "^3.9.0",
     "gulp": "^3.9.1",
-    "@angular/common": "^4.3.0",
-    "@angular/compiler": "^4.3.0",
-    "@angular/core": "^4.3.0",
-    "@angular/platform-browser": "^4.3.0",
-    "@angular/forms": "4.3.0",
-    "rxjs": "^5.1.0",
-    "zone.js": "^0.8.4"
+    "@angular/common": "^4.3.6",
+    "@angular/compiler": "^4.3.6",
+    "@angular/core": "^4.3.6",
+    "@angular/platform-browser": "^4.3.6",
+    "@angular/forms": "4.3.6",
+    "rxjs": "^5.4.2",
+    "zone.js": "^0.8.14"
   }
 }

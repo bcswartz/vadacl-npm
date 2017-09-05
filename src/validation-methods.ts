@@ -46,7 +46,7 @@ export class ValidationMethods {
         return function ( control: AbstractControl ) {
             //Use and invoke the official Angular minLength Validator
             let baseValidator = Validators.minLength( minLength );
-            let outcome = baseValidator( control ) ;
+            let outcome = baseValidator( control );
             if ( outcome ) {
                 //Append the message
                 outcome[ 'minlength' ].message = msg;
@@ -60,12 +60,49 @@ export class ValidationMethods {
         return function ( control: AbstractControl ) {
             //Use and invoke the official Angular maxLength Validator
             let baseValidator = Validators.maxLength( maxLength );
-            let outcome = baseValidator( control)  ;
+            let outcome = baseValidator( control );
             if ( outcome ) {
                 //Append the message
                 outcome[ 'maxlength' ].message = msg;
             }
             return outcome;
+        }
+    }
+
+
+    static min( min: number, message ?: string, className ?: string, propertyName ?: string  ) {
+        let msg = message || ValidationMethods.getLocaleMessage( 'min', className, propertyName );
+        return function ( control: AbstractControl ) {
+            //Use and invoke the official Angular min Validator, added in 4.x
+            let baseValidator = Validators.min( min );
+            let outcome = baseValidator( control );
+            if ( outcome ) {
+                //Append the message
+                outcome[ 'min' ].message = msg;
+            }
+            return outcome;
+        }
+    }
+
+    static max( max: number, message ?: string, className ?: string, propertyName ?: string  ) {
+        let msg = message || ValidationMethods.getLocaleMessage( 'max', className, propertyName );
+        return function ( control: AbstractControl ) {
+            //Use and invoke the official Angular max Validator, added in 4.x
+            let baseValidator = Validators.max( max );
+            let outcome = baseValidator( control );
+            if ( outcome ) {
+                //Append the message
+                outcome[ 'max' ].message = msg;
+            }
+            return outcome;
+        }
+    }
+
+    static email( message ?: string, className ?: string, propertyName ?: string  ) {
+        let msg = message || ValidationMethods.getLocaleMessage( 'email', className, propertyName );
+        return function ( control: AbstractControl ) {
+            //When a value is present, use and invoke the official Angular email Validator, added in 4.x
+            return ( !ValidationMethods.isEmpty( control ) && Validators.email( control ) ) ? { 'email': { 'isNotEmail': true, 'message': msg } } : null;
         }
     }
 
