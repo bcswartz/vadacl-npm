@@ -1,7 +1,7 @@
 {
   "name": "vadacl",
-  "version": "1.0.7",
-  "description": "NPM module for the library for configuring validations and validation messages for domain classes",
+  "version": "1.0.9",
+  "description": "Extends and enhances reactive form validation in Angular 4.x",
   "author": "Brian Swartzfager",
   "license": "MIT",
   "main": "dist/index.js",
@@ -9,7 +9,7 @@
   "scripts": {
     "prepublish": "npm run build; mkdir ./dist/templates; cp ./src/validation-messages.ts ./dist/templates/validation-messages.ts; cp ./templates/vadacl.ts.txt ./dist/templates/vadacl.ts",
     "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "gulp test"
   },
   "repository": {
     "type": "git",
