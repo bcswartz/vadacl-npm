@@ -1,6 +1,6 @@
 {
   "name": "vadacl",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "Extends and enhances reactive form validation in Angular 4.x",
   "author": "Brian Swartzfager",
   "license": "MIT",
