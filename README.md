@@ -1,6 +1,17 @@
 # vadacl
 
 > Extends and enhances reactive form validation in Angular 4.x
+> 
+> vadacl provides:
+>
+>* A mechanism for declaring validation logic within domain classes / data objects that can be reused in 
+>multiple components.
+>* The ability to configure the text of validation failure messages as part of the domain class validation logic or
+>within a global validation message object.
+>* Helper methods for triggering validation and displaying validation results.
+>* Additional validation methods beyond those provided by Angular 4.x, and the ability to extend the vadacl
+>validation methods with custom methods in  your project.
+
 
 ## Installation / Getting Started
 
