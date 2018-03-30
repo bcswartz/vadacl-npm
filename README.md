@@ -8,9 +8,10 @@
 >multiple components.
 >* The ability to configure the text of validation failure messages as part of the domain class validation logic or
 >within a global validation message object.
->* Helper methods for triggering validation and displaying validation results.
+>* Helper methods for triggering validation, displaying validation results, and generating a FormGroup based on domain
+>class properties and validations.
 >* Additional validation methods beyond those provided by Angular 4.x and 5.x, and the ability to extend the vadacl
->validation methods with custom methods in  your project.
+>validation methods with custom methods in your project.
 
 
 ## Installation / Getting Started
@@ -93,12 +94,12 @@ export class UserFormComponent extends Vadacl implements OnInit {
          this.myForm = new FormGroup( {
            'firstName': new FormControl( 'Bob', this.applyRules( this.user, 'firstName' ) )
          } )
-       }
+    }
 }
 ```
 
 ...and display the validation message that is passed back as part of the metadata regarding the 
-validation failure, using the showErrors() and getControlErrors() methods provided by vadacl...
+validation failure, using the showErrors() and getControlErrors() methods provided by vadacl:
 
 ```html
 <label for="firstName">First name:</label>
@@ -112,6 +113,19 @@ validation failure, using the showErrors() and getControlErrors() methods provid
 </div>
 ```
 
+Starting with version 1.1.0 of vadacl, the reactive form can be generated based on the domain class properties and 
+validations by using the generateForm() method.  Here is the previous example rewritten to use generateForm():
+
+```javascript
+import { Vadacl } from 'vadacl';
+export class UserFormComponent extends Vadacl implements OnInit {
+    this.user = new User();
+    ngOnInit() {
+         this.myForm = this.generateForm( this.user );
+    }
+}
+```
+  
 #### Global Validation Messages
 
 vadacl includes a "global" collection of validation messages via the validation-messages.ts file.  Out of the box, it 

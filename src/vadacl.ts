@@ -1,4 +1,4 @@
-import { AbstractControl, ValidatorFn } from '@angular/forms';
+import { AbstractControl, ValidatorFn, FormGroup, FormControl } from '@angular/forms';
 import { ValidationMethods } from './validation-methods';
 import { PropertyValidations } from './interfaces';
 
@@ -21,7 +21,7 @@ export class Vadacl {
         for( let mv in mergedValidations ) {
             //Add className and propertyName values to arguments
             mergedValidations[ mv ].className = domainClass ? domainClass.constructor.name : undefined;
-            mergedValidations[ mv ].propertyName = propertyName ? propertyName : undefined;;
+            mergedValidations[ mv ].propertyName = propertyName ? propertyName : undefined;
 
             //Check that validation method exists
             if( Vadacl.validationMethods[ mv ] ) {
@@ -160,6 +160,44 @@ export class Vadacl {
         control.markAsDirty();
         if( markTouched) { control.markAsTouched() };
         control.setValue( value );
+    }
+
+    /*
+     Convenience method that returns a FormGroup based on the domain class argument with the desired FormControls and validations
+     */
+    generateForm( domainClass: any, mods: any = {} ) : FormGroup {
+        let generatorMap = {};
+        let formMap = {};
+
+        //If mods argument includes an array of the "only" properties you want in the form, use that. Otherwise, grab the domain class properties
+        let domainProperties = mods.only ? mods.only : Object.keys( domainClass );
+
+        for( let p of domainProperties ) {
+            if( p != 'validations' ) {  //Exclude validations property
+
+                generatorMap[ p ] = {
+                    currentValue: domainClass[ p ],
+
+                    //Use key/values pairs in mods.rename to name the FormControl something different from the property name
+                    controlName: mods.rename && mods.rename[ p ] ? mods.rename[ p ] : p,
+
+                    //Apply any additional validations for the property in mods.validations, otherwise the normal property validations will be used
+                    validations: mods.validations && mods.validations[ p ] ? this.applyRules( domainClass, p, mods.validations[ p ] ) : this.applyRules( domainClass, p ),
+
+                    //If mods.only is not defined, check mods.exclude for exclusions from the form.
+                    include: ( !mods.only && mods.exclude && mods.exclude.indexOf( p ) > -1 ) ? false : true
+                };
+
+            }
+        }
+
+        for( let f in generatorMap ) {
+            if( generatorMap[ f ].include ) {
+                formMap[ generatorMap[ f ].controlName ] = new FormControl( generatorMap[ f ].currentValue, generatorMap[ f ].validations );
+            }
+        }
+
+        return new FormGroup( formMap );
     }
 
 }

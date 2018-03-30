@@ -538,7 +538,121 @@ describe( 'Vadacl', () => {
             expect( formControl.touched ).toEqual( true );
         });
 
-    })
+    });
+
+    describe( 'generateForm', () => {
+        let domainClass: any;
+
+        beforeEach( () => {
+            spyOn( vadacl, 'applyRules' ).and.returnValue( [] );
+            domainClass = {
+                firstName: 'Robert',
+                middleName: null,
+                lastName: null,
+                email: 'bob@somewhere.com',
+
+                validations: {
+                    firstName: {
+                        required: { message: 'First name required.' },
+                        minLength: { minLength: 3, message: 'Must be at least 3 characters long.'}
+                    },
+                    lastName: {
+                        required: { message: 'Last name required.' }
+                    }
+                }
+            }
+        });
+
+        describe( 'when no modifications are used', () => {
+           it( 'creates FormControls for all properties but ignore validations object', () => {
+                let form = vadacl.generateForm( domainClass );
+                expect( form instanceof FormGroup ).toEqual( true );
+                expect( form.controls.firstName ).toBeDefined();
+                expect( form.controls.lastName ).toBeDefined();
+                expect( form.controls.middleName ).toBeDefined();
+                expect( form.controls.email ).toBeDefined();
+                expect( form.controls.validations ).not.toBeDefined();
+           });
+
+           it( 'sets starting FormControl values based on domain class values', () => {
+                let form = vadacl.generateForm( domainClass );
+                expect( form.controls.firstName.value ).toEqual( 'Robert' );
+                expect( form.controls.email.value ).toEqual( 'bob@somewhere.com' );
+                expect( form.controls.lastName.value ).toEqual( null )
+           });
+
+           it( 'passes domain class arguments to the applyRules method', () => {
+                vadacl.generateForm( domainClass );
+                expect( vadacl.applyRules[ "calls" ].count() ).toEqual( 4 );
+                expect( vadacl.applyRules[ "calls" ].argsFor( 0 ).length ).toEqual( 2 );
+                expect( vadacl.applyRules[ "calls" ].argsFor( 0 )[ 0 ] ).toEqual( domainClass );
+                expect( vadacl.applyRules[ "calls" ].argsFor( 0 )[ 1 ] ).toEqual( 'firstName' );
+                expect( vadacl.applyRules[ "calls" ].argsFor( 1 ).length ).toEqual( 2 );
+                expect( vadacl.applyRules[ "calls" ].argsFor( 1 )[ 0 ] ).toEqual( domainClass );
+                expect( vadacl.applyRules[ "calls" ].argsFor( 1 )[ 1 ] ).toEqual( 'middleName' );
+           });
+        });
+
+        describe( 'when the "exclude" modification is used', () => {
+           it( 'will not created FormControls for properties listed in the modification', () => {
+                let form = vadacl.generateForm( domainClass, { exclude: [ 'middleName' ] } );
+                expect( form.controls.firstName ).toBeDefined();
+                expect( form.controls.lastName ).toBeDefined();
+                expect( form.controls.email ).toBeDefined();
+                expect( form.controls.middleName ).not.toBeDefined();
+                expect( form.controls.email.value ).toEqual( 'bob@somewhere.com' );
+                // Exclusions are evaluated after the call to applyRules, so applyRules is still called for each domain class property
+                expect( vadacl.applyRules[ "calls" ].count() ).toEqual( 4 );
+           });
+        });
+
+        describe( 'when the "only" modification is used', () => {
+           it( 'will only create FormControls for the properties listed in the modification', () => {
+                let form = vadacl.generateForm( domainClass, { only: [ 'firstName', 'lastName' ] } );
+                expect( form.controls.firstName ).toBeDefined();
+                expect( form.controls.lastName ).toBeDefined();
+                expect( form.controls.middleName ).not.toBeDefined();
+                expect( form.controls.email ).not.toBeDefined();
+                expect( form.controls.firstName.value ).toEqual( 'Robert' );
+                expect( vadacl.applyRules[ "calls" ].count() ).toEqual( 2 );
+           });
+
+           it( 'will override the "exclude" modification if both are present', () => {
+               let form = vadacl.generateForm( domainClass, { only: [ 'firstName', 'lastName', 'email' ], exclude: [ 'firstName', 'email' ] } );
+               expect( form.controls.firstName ).toBeDefined();
+               expect( form.controls.lastName ).toBeDefined();
+               expect( form.controls.email ).toBeDefined();
+               expect( form.controls.middleName ).not.toBeDefined();
+               expect( form.controls.firstName.value ).toEqual( 'Robert' );
+               expect( vadacl.applyRules[ "calls" ].count() ).toEqual( 3 );
+           });
+        });
+
+        describe( 'when the "validations" modification is used', () => {
+           it( 'will add those validations to the invocation of applyRules', () => {
+               let addedValidations = {
+                   firstName: {
+                       maxLength: { maxLength: 25, message: 'Must be no longer than 25 characters.' }
+                   },
+                   middleName: {
+                       required: { message: 'Middle name is required.' },
+                       minLength: { minLength: 3, message: 'Must be at least 3 characters long.' }
+                   }
+               };
+
+               vadacl.generateForm( domainClass, { only: [ 'firstName', 'middleName' ], validations: addedValidations } );
+               expect( vadacl.applyRules[ "calls" ].count() ).toEqual( 2 );
+               expect( vadacl.applyRules[ "calls" ].argsFor( 0 ).length ).toEqual( 3 );
+               expect( vadacl.applyRules[ "calls" ].argsFor( 0 )[ 0 ] ).toEqual( domainClass );
+               expect( vadacl.applyRules[ "calls" ].argsFor( 0 )[ 1 ] ).toEqual( 'firstName' );
+               expect( vadacl.applyRules[ "calls" ].argsFor( 0 )[ 2 ] ).toEqual( { maxLength: { maxLength: 25, message: 'Must be no longer than 25 characters.' } } );
+               expect( vadacl.applyRules[ "calls" ].argsFor( 1 ).length ).toEqual( 3 );
+               expect( vadacl.applyRules[ "calls" ].argsFor( 1 )[ 0 ] ).toEqual( domainClass );
+               expect( vadacl.applyRules[ "calls" ].argsFor( 1 )[ 1 ] ).toEqual( 'middleName' );
+               expect( vadacl.applyRules[ "calls" ].argsFor( 1 )[ 2 ] ).toEqual( addedValidations[ 'middleName' ] );
+           })
+        });
+    });
 });
 
 
